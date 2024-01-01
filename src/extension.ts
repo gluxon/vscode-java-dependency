@@ -20,6 +20,7 @@ import { DiagnosticProvider } from "./tasks/buildArtifact/migration/DiagnosticPr
 import { setContextForDeprecatedTasks, updateExportTaskType } from "./tasks/buildArtifact/migration/utils";
 import { CodeActionProvider } from "./tasks/buildArtifact/migration/CodeActionProvider";
 import { newJavaFile } from "./explorerCommands/new";
+import { getExclusionGlob } from "./utils/getExclusionGlob";
 
 export async function activate(context: ExtensionContext): Promise<void> {
     contextManager.initialize(context);
@@ -29,7 +30,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
     addExtensionChangeListener(context);
     // the when clause does not support 'workspaceContains' we used for activation event,
     // so we manually find the target files and set it to a context value.
-    workspace.findFiles("{*.gradle,*.gradle.kts,pom.xml,.classpath}", undefined, 1).then((uris: Uri[]) => {
+    workspace.findFiles("{*.gradle,*.gradle.kts,pom.xml,.classpath}", getExclusionGlob(), 1).then((uris: Uri[]) => {
         if (uris && uris.length) {
             contextManager.setContextValue(Context.WORKSPACE_CONTAINS_BUILD_FILES, true);
         }
